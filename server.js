@@ -25,6 +25,12 @@ app.use(
     })
 );
 
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
+  
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -33,13 +39,13 @@ app.use(passport.session());
 //     res.send('<a href="/auth/google">OAuth</a>');
 // });
 
-app.get('/auth/google',passport.authenticate('google',{scope:["profile","email"]}));
+app.get('/api/auth/google',passport.authenticate('google',{scope:["profile","email"]}));
 
 app.get('/auth/google/callback',passport.authenticate('google',{failureRedirect: '/'}),(req,res)=>{
     res.redirect(`${process.env.FRONTENDURL}`);
 });
 
-app.get('/loggedin',(req,res)=>{
+app.get('/api/loggedin',(req,res)=>{
     if(req.isAuthenticated()){
         res.json(req.user);
     }else{
@@ -47,7 +53,7 @@ app.get('/loggedin',(req,res)=>{
     }
 }); 
 
-app.get('/logout',(req,res)=>{
+app.get('/api/logout',(req,res)=>{
     req.logout((err)=>{
         if(err){
             return res.status(500).json({messege:'Logout failed'});
